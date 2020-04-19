@@ -54,18 +54,20 @@ class Camera1(object):
                 y1=face_cor[x][1]
                 x2=x1+face_cor[x][2]
                 y2=y1+face_cor[x][3]
-                photo=cv2.rectangle(photo,(x1,y1),(x2,y2),[0,255,0])
+                photo=cv2.rectangle(photo,(x1,y1),(x2,y2),[0,255,0],3)
             for face in face_cor:
-                y = round((self.Face[0]*self.FOCUS/(face[2])),5)
-                if face[0]   < 240:
-                    P = 480 - 2*(face[0] )
-                    P_ = y * P /38
-                    x = round((P_ * y / (self.FOCUS * 2)),5)
-                    x = -x
-                elif face[0]   > 240:
-                    P = 2*(face[0] ) - 480
-                    P_ = y * P /38
-                    x = round((P_ *y / (self.FOCUS * 2)),5)
+                y = round((self.Face[0]*self.FOCUS/(face[2])),2)
+                if face[0] + face[2]/2   < 320:
+                    P = 640 - 2*(face[0] + face[2]/2 )
+                    #P_ = y * P /38
+                    w = round((P * y / (self.FOCUS )),2)
+                    x = -w/2
+                elif face[0] + face[2]/2  > 320:
+                    P = 2*(face[0] + face[2]/2 ) - 640
+                    #P_ = y * P /38
+                    w = round((P *y / (self.FOCUS)),2)
+                    w = w 
+                    x = w/2
                 else:
                     x = 0
                 self.faces.append((x,y))
@@ -80,13 +82,13 @@ class Camera1(object):
                     for b in range(a + 1,len(self.faces)):
                         dist = (self.faces[a][0] - self.faces[b][0])**2 + ( self.faces[a][1] - self.faces[b][1])**2
                         dist = round(math.sqrt(dist),5)
-                        if dist < 500:
+                        if dist < 60:
                             self.warning[a].append(b)
                             self.warning[b].append(a)
                             dist_str="distance is "+str(dist)
                             #y1 = y0 + i*dy
                             #y1 = int(y1)
-                            cv2.putText(photo,dist_str,(100,50),cv2.FONT_HERSHEY_SIMPLEX,1,[0,0,255],2)
+                            #cv2.putText(photo,dist_str,(100,50),cv2.FONT_HERSHEY_SIMPLEX,1,[0,0,255],2)
     #                             
             
             if len(self.warning)>0:
@@ -99,7 +101,7 @@ class Camera1(object):
                             y1=face_cor[war][1]
                             x2=x1+face_cor[war][2]
                             y2=y1+face_cor[war][3]
-                            photo=cv2.rectangle(photo,(x1,y1),(x2,y2),[0,0,255])
+                            photo=cv2.rectangle(photo,(x1,y1),(x2,y2),[0,0,255],3)
             str1 = ''
             n = 0
             if len(self.warning)>0:
